@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container my-5">
+    <h2 class="display-4 fw-bold text-success">{{ nombre }}</h2>
+    <div class="alert alert-info border-start border-4">{{ info }}</div>
+
+    <!-- SECCIÓN DE JUEGOS JS -->
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <div class="card shadow border-0 p-4 mb-4">
+                <h3>🎮 Juego 1: Desafío de Memoria</h3>
+                <div id="memory-game" class="bg-light p-3 rounded"></div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow border-0 p-4 mb-4">
+                <h3>🧩 Juego 2: Rompecabezas Lógico</h3>
+                <div id="puzzle-box" class="bg-light p-3 rounded"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXAMEN INTERACTIVO -->
+    <div class="card p-5 shadow-lg border-0 bg-light">
+        <h3 class="text-center mb-4">Evaluación de Progreso</h3>
+        <form action="/evaluar" method="POST">
+            <input type="hidden" name="curso_nombre" value="{{ nombre }}">
+            {% for i in range(1, 11) %}
+            <div class="mb-4">
+                <p class="fw-bold">{{ i }}. ¿Cuál de estas opciones describe mejor el avance en {{ nombre }}?</p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q{{i}}" value="a"> <label>Dominio de la técnica</label>
+                </div>
+                <!-- Añadir más opciones b, c -->
+            </div>
+            {% endfor %}
+            <button class="btn btn-success btn-lg w-100">FINALIZAR CURSO</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

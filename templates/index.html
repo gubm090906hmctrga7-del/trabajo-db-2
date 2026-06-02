@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% extends 'base.html' %}
+{% block content %}
+<style>
+    /* Siempre definimos la clase, pero solo se usará si el HTML existe */
+    .curtain {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: #1a1a1a; z-index: 9999; display: flex; align-items: center; justify-content: center;
+        animation: openCurtain 2s forwards; animation-delay: 2s;
+    }
+    @keyframes openCurtain { 
+        to { transform: translateY(-100%); opacity: 0; visibility: hidden; } 
+    }
+    .curtain h2 { color: #f1c40f; font-size: 2.5rem; text-align: center; }
+
+    .cat-card { 
+        height: 250px; transition: 0.4s; color: white; text-decoration: none; 
+        display: flex; flex-direction: column; align-items: center; 
+        justify-content: center; border-radius: 20px; 
+    }
+    .cat-card:hover { 
+        transform: scale(1.05); filter: brightness(1.1); 
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3); 
+    }
+</style>
+
+<!-- Aquí la lógica del HTML -->
+{% if mostrar == True %}
+<div class="curtain">
+    <h2>Bienvenido a tu Transformación</h2>
+</div>
+{% endif %}
+
+{% if mostrar %}<div class="curtain"><h2>Bienvenido {{ session['user_nombre'] }} a tu desarrollo profesional... ✨</h2></div>{% endif %}
+
+<div class="container py-5 text-center">
+    <h2 class="fw-bold mb-5">ELIGE TU CAMINO DEL SABER</h2>
+    <div class="row g-4">
+        <div class="col-md-3"><a href="/curso/ARTE" class="cat-card shadow" style="background: var(--arte);"><i class="bi bi-palette display-1"></i><h3>ARTE</h3></a></div>
+        <div class="col-md-3"><a href="/curso/CULTURA" class="cat-card shadow" style="background: var(--cultura);"><i class="bi bi-globe-americas display-1"></i><h3>CULTURA</h3></a></div>
+        <div class="col-md-3"><a href="/curso/TECNOLOGÍA" class="cat-card shadow" style="background: var(--tecnologia);"><i class="bi bi-cpu display-1"></i><h3>TECNOLOGÍA</h3></a></div>
+        <div class="col-md-3"><a href="/curso/OFICIOS" class="cat-card shadow" style="background: var(--oficios);"><i class="bi bi-tools display-1"></i><h3>OFICIOS</h3></a></div>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

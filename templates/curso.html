@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% extends 'layout.html' %}
+
+{% block content %}
+<!-- Fuentes y Animaciones -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Poppins:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+    :root { --paz-v: #1b4332; --paz-l: #2d6a4f; --paz-o: #f1c40f; }
+    body { background: #f0f2f5; font-family: 'Inter', sans-serif; }
+
+    /* Barra de navegación de curso */
+    .course-nav {
+        background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
+        padding: 15px 0; position: sticky; top: 0; z-index: 1000;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-bottom: 4px solid var(--paz-v);
+    }
+    .custom-progress { height: 10px; background: #e9ecef; border-radius: 20px; overflow: hidden; }
+    .progress-fill { background: linear-gradient(90deg, var(--paz-v), var(--paz-l)); height: 100%; width: 0%; transition: 0.8s ease; }
+
+    /* Estaciones de aprendizaje */
+    .step-card {
+        background: white; border-radius: 35px; padding: 50px; margin: 40px auto;
+        max-width: 850px; display: none; position: relative;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.05); animation: fadeInUp 0.8s ease;
+        border-left: 10px solid var(--paz-v);
+    }
+    .step-card.active { display: block; }
+
+    .btn-glow {
+        background: var(--paz-o); color: #000; border: none; padding: 18px 45px;
+        border-radius: 50px; font-weight: 800; font-size: 1.1rem; transition: 0.3s;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .btn-glow:hover { transform: scale(1.05) translateY(-3px); background: #d4ac0d; }
+
+    #media-center { 
+        display: none; background: #0b251a; border-radius: 30px; padding: 40px; 
+        margin: 40px 0; border: 4px solid var(--paz-o); 
+    }
+    
+    .note-area { border: none; background: #f8f9fa; border-radius: 20px; padding: 20px; resize: none; width: 100%; }
+</style>
+
+<!-- NAV DEL CURSO -->
+<div class="course-nav">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="/dashboard" class="btn btn-dark rounded-pill px-4 fw-bold">↩ SALIR</a>
+        <div class="flex-grow-1 mx-4 mx-md-5">
+            <div class="custom-progress"><div id="course-bar" class="progress-fill"></div></div>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-warning rounded-pill px-3 fw-bold d-none d-md-block" onclick="reiniciar()">🔄 REINICIAR</button>
+            <button class="btn btn-success rounded-pill px-3 fw-bold" onclick="pausar()">💾 GUARDAR</button>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5 text-center">
+    <!-- Título y Favoritos -->
+    <h1 class="display-3 fw-bold text-success mb-3" style="font-family: 'Poppins';">{{ nombre }}</h1>
+    
+    <div class="mb-5">
+        <a href="/toggle_favorito/{{ nombre }}" class="btn {{ 'btn-warning' if es_favorito else 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
+            {{ '⭐ EN FAVORITOS' if es_favorito else '☆ AGREGAR A FAVORITOS' }}
+        </a>
+    </div>
+
+    <!-- PASOS DE TEORÍA -->
+    <div id="steps-wrapper" class="text-start"></div>
+
+    <!-- BOTÓN VIDEO -->
+    <button class="btn btn-outline-danger btn-lg rounded-pill px-5 border-2 fw-bold my-4 shadow-sm" onclick="toggleMedia()">
+        📺 VER MATERIAL AUDIOVISUAL
+    </button>
+
+    <!-- CENTRO DE MEDIOS -->
+    <div id="media-center" class="animate__animated animate__fadeIn text-start">
+        <div class="d-flex justify-content-between text-white mb-4">
+            <h3 class="fw-bold mb-0">Contenido en Video</h3>
+            <button class="btn btn-outline-light btn-sm rounded-pill" onclick="toggleMedia()">Cerrar</button>
+        </div>
+        <div class="row g-4 text-center">
+            {% for v in datos.videos %}
+            <div class="col-md-6">
+                <div class="ratio ratio-16x9 rounded-4 overflow-hidden shadow-lg border border-secondary">
+                    <iframe src="{{ v.url }}" allowfullscreen></iframe>
+                </div>
+                <p class="text-white mt-2 small fw-bold">{{ v.titulo }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- CUADERNO DE NOTAS -->
+    <div class="max-width-850 mx-auto my-5 text-start" style="max-width: 850px;">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="bg-dark p-3 text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">📓 Mi Cuaderno de Notas</h5>
+                <span class="badge bg-success">Privado</span>
+            </div>
+            <div class="card-body">
+                <form action="/guardar_nota" method="POST">
+                    <input type="hidden" name="curso_nombre" value="{{ nombre }}">
+                    <textarea name="contenido" class="note-area" rows="4" placeholder="Escribe aquí tus ideas claves del curso...">{{ nota.contenido if nota else '' }}</textarea>
+                    <button class="btn btn-success mt-3 w-100 rounded-pill fw-bold shadow">💾 GUARDAR NOTA EN MI PERFIL</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXAMEN FINAL -->
+    <div id="exam-zone" style="display:none;" class="animate__animated animate__zoomIn mt-5 text-start">
+        <div class="card border-0 shadow-lg rounded-5 overflow-hidden mx-auto" style="max-width: 850px;">
+            <div class="bg-success text-white py-5 text-center">
+                <h2 class="display-5 fw-bold">Examen de Certificación 🎓</h2>
+                <p class="opacity-75">Responde correctamente para obtener tu diploma oficial.</p>
+            </div>
+            <div class="p-4 p-md-5">
+                <form action="/evaluar" method="POST">
+                    <input type="hidden" name="curso_nombre" value="{{ nombre }}">
+                    {% for p in datos.preguntas %}
+                    <div class="mb-5 p-4 bg-light rounded-4">
+                        <h5 class="fw-bold mb-4">{{ loop.index }}. {{ p.p }}</h5>
+                        <div class="d-grid gap-2">
+                            <label class="btn btn-outline-dark text-start p-3 rounded-3"><input type="radio" name="q{{loop.index}}" value="a" required> {{ p.a }}</label>
+                            <label class="btn btn-outline-dark text-start p-3 rounded-3"><input type="radio" name="q{{loop.index}}" value="b"> {{ p.b }}</label>
+                            <label class="btn btn-outline-dark text-start p-3 rounded-3"><input type="radio" name="q{{loop.index}}" value="c"> {{ p.c }}</label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill py-3 fw-bold shadow">ENVIAR Y OBTENER CERTIFICADO</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const userId = "{{ user_id }}";
+    const courseName = "{{ nombre }}"; 
+    const storageKey = `paz_v3_u${userId}_c${courseName.replace(/\s+/g, '_')}`;
+    
+    // Generar stations a partir del texto (split por doble salto de línea)
+    const infoRaw = `{{ datos.info | safe }}`;
+    const blocks = infoRaw.split('\n\n').filter(b => b.trim() !== "");
+    const box = document.getElementById('steps-wrapper');
+
+    function loadContent() {
+        const progress = parseInt(localStorage.getItem(storageKey)) || 0;
+        
+        blocks.forEach((text, i) => {
+            const card = document.createElement('div');
+            card.id = 'step-' + i;
+            card.className = `step-card mx-auto ${i <= progress ? 'active' : ''}`;
+            card.innerHTML = `
+                <div class="text-muted small fw-bold mb-2">ESTACIÓN ${i+1} DE ${blocks.length}</div>
+                <div class="fs-4 lead">${text.replace(/\n/g, '<br>')}</div>
+                <div class="text-center mt-5" id="area-btn-${i}">
+                    <button class="btn-glow" onclick="nextProgress(${i})">
+                        ${i < blocks.length - 1 ? 'SIGUIENTE PASO ➔' : 'IR AL EXAMEN FINAL 🏁'}
+                    </button>
+                </div>
+            `;
+            box.appendChild(card);
+            // Si ya pasó esta estación, ocultamos el botón de esa tarjeta
+            if (i < progress) {
+                const btnArea = document.getElementById('area-btn-' + i);
+                if(btnArea) btnArea.style.display = 'none';
+            }
+        });
+
+        if (progress >= blocks.length) document.getElementById('exam-zone').style.display = 'block';
+        updateBar(progress);
+    }
+
+    function nextProgress(idx) {
+        const currentBtn = document.getElementById('area-btn-' + idx);
+        if(currentBtn) currentBtn.style.display = 'none';
+        
+        const nextIdx = idx + 1;
+        if (nextIdx < blocks.length) {
+            const nextCard = document.getElementById('step-' + nextIdx);
+            nextCard.classList.add('active');
+            localStorage.setItem(storageKey, nextIdx);
+            setTimeout(() => nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' }), 200);
+        } else {
+            document.getElementById('exam-zone').style.display = 'block';
+            localStorage.setItem(storageKey, nextIdx);
+            setTimeout(() => document.getElementById('exam-zone').scrollIntoView({ behavior: 'smooth' }), 200);
+        }
+        updateBar(nextIdx);
+    }
+
+    function updateBar(idx) {
+        const p = (idx / blocks.length) * 100;
+        document.getElementById('course-bar').style.width = p + '%';
+    }
+
+    function toggleMedia() {
+        const m = document.getElementById('media-center');
+        m.style.display = (m.style.display === 'block') ? 'none' : 'block';
+        if(m.style.display === 'block') m.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function reiniciar() {
+        if(confirm("¿Estás seguro de reiniciar tu progreso en este curso?")) {
+            localStorage.removeItem(storageKey);
+            location.reload();
+        }
+    }
+
+    function pausar() {
+        const p = (parseInt(localStorage.getItem(storageKey)) || 0);
+        const percent = Math.round((p / blocks.length) * 100);
+        alert(`✅ Avance del ${percent}% guardado en tu cuenta.`);
+        window.location.href = "/dashboard";
+    }
+
+    window.onload = loadContent;
+</script>
+{% endblock %}
+</body>
+</html>
+

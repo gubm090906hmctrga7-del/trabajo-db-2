@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% extends 'layout.html' %}
+{% block content %}
+<div class="container py-5 text-center">
+    {% if score >= 5 %}
+    <div id="certificado" class="card shadow-lg p-5 border-5 border-success mx-auto bg-white" style="max-width: 800px; border-style: double !important;">
+        <h1 class="text-success display-1 mb-0">🏆</h1>
+        <h2 class="display-4 fw-bold">CERTIFICADO DE ÉXITO</h2>
+        <hr class="w-25 mx-auto">
+        <p class="fs-4">Felicidades, <strong>{{ session['nombre'] }}</strong></p>
+        <p class="fs-5">Has concluido con una actitud ejemplar el curso de:</p>
+        <h3 class="text-primary fw-bold text-uppercase mb-4">{{ curso }}</h3>
+        
+        <div class="bg-light p-3 rounded mb-4">
+            <p class="h2 mb-0">CALIFICACIÓN: <span class="text-success">{{ score }}/10</span></p>
+        </div>
+
+        <p class="fst-italic text-muted px-5">
+            "Este logro es testimonio de tu esfuerzo y tu voluntad de cambio. Cada paso cuenta en tu camino hacia una vida plena en sociedad."
+        </p>
+        
+        <div class="row mt-5 no-print">
+            <div class="col">
+                <button onclick="window.print()" class="btn btn-dark p-3 px-5 rounded-pill shadow">🖨️ IMPRIMIR MI BOLETA</button>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="card p-5 shadow border-0 mx-auto" style="max-width: 600px;">
+        <h2 class="display-4 text-warning">¡No te desanimes!</h2>
+        <p class="fs-4">Obtuviste un <strong>{{ score }}/10</strong>. El camino del aprendizaje a veces requiere un segundo intento.</p>
+        <p class="text-muted">Repasa los juegos y la teoría del curso de {{ curso }} y vuelve a intentarlo mañana. ¡Tú puedes!</p>
+        <a href="/dashboard" class="btn btn-success btn-lg rounded-pill px-5 mt-3">VOLVER A INTENTAR</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+@media print {
+    body * { visibility: hidden; }
+    #certificado, #certificado * { visibility: visible; }
+    #certificado { position: absolute; left: 0; top: 0; width: 100%; border: none !important; }
+    .no-print { display: none; }
+}
+</style>
+{% endblock %}
+</body>
+</html>

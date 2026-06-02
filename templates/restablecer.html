@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% extends 'layout.html' %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-dark text-white text-center py-3">
+                    <h4 class="mb-0">🔐 Apartado Seguro</h4>
+                </div>
+                <div class="card-body p-4 text-center">
+                    <p class="text-muted">Validación exitosa para:<br><b class="text-dark">{{ correo }}</b></p>
+                    <hr>
+                    <form action="/cambiar_password_recuperacion" method="POST">
+                        <label class="small fw-bold mb-2">ESCRIBE TU NUEVA CONTRASEÑA</label>
+                        <input type="password" name="password" class="form-control rounded-pill mb-4 p-3" placeholder="Nueva clave" required minlength="6">
+                        <button class="btn btn-success w-100 rounded-pill fw-bold p-3">ACTUALIZAR Y ENTRAR</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

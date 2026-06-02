@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% extends 'layout.html' %}
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-success">Panel de Control</h1>
+        <p class="lead">Continúa tu camino hacia el éxito.</p>
+    </div>
+
+    <div class="row g-4">
+        {% set categorias = [
+            ('arte', '🎨', 'ARTE', 'success', '#e9f5ee'),
+            ('oficios', '🛠️', 'OFICIOS', 'warning', '#fff8f0'),
+            ('cultura', '📚', 'CULTURA', 'primary', '#f0f4ff'),
+            ('informatica', '💻', 'INFORMÁTICA', 'danger', '#fdf0f0')
+        ] %}
+
+        {% for id, ico, tit, btn, bg in categorias %}
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 text-center p-4 border-0 shadow position-relative" style="background: beige;">
+                <!-- Etiqueta Inteligente -->
+                <div class="position-absolute top-0 end-0 m-2">
+                    {% if tit in completados %}
+                        <span class="badge bg-success rounded-pill">✅ Hecho</span>
+                    {% elif tit in favoritos %}
+                        <span class="badge bg-warning text-dark rounded-pill">⭐ Favorito</span>
+                    {% endif %}
+                </div>
+
+                <h2 class="display-4">{{ico}}</h2>
+                <h3 class="fw-bold text-{{btn}}">{{tit}}</h3>
+                <a href="/categoria/{{id}}" class="btn btn-{{btn}} rounded-pill mt-auto">Entrar</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

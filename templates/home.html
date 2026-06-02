@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% extends 'layout.html' %}
+
+{% block content %}
+<div class="container-fluid banner text-center shadow-lg">
+    <h1 class="display-3 fw-bold mb-3">Tu Camino a la Libertad</h1>
+    <p class="fs-4 fst-italic">"Un espacio seguro diseñado para tu renacer."</p>
+</div>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg p-5">
+                <!-- Pestañas de Navegación -->
+                <ul class="nav nav-pills mb-4 justify-content-center bg-light p-2 rounded-pill" id="pills-tab">
+                    <li class="nav-item">
+                        <button class="nav-link active rounded-pill" data-bs-toggle="pill" data-bs-target="#login">Entrar</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link rounded-pill" data-bs-toggle="pill" data-bs-target="#reg">Registro</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link rounded-pill" data-bs-toggle="pill" data-bs-target="#rec">Recuperar</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content">
+                    <!-- LOGIN -->
+                    <div class="tab-pane fade show active" id="login">
+                        <form action="/login" method="POST">
+                            <input type="email" name="correo" class="form-control mb-3 p-3" placeholder="Correo Electrónico" required>
+                            <input type="password" name="password" class="form-control mb-4 p-3" placeholder="Contraseña" required>
+                            <button class="btn btn-primary w-100 p-3 fw-bold shadow">INICIAR SESIÓN</button>
+                        </form>
+                    </div>
+
+                    <!-- REGISTRO -->
+                    <div class="tab-pane fade" id="reg">
+                        <form action="/registro" method="POST">
+                            <input type="text" name="nombre" class="form-control mb-3" placeholder="Nombre completo" required>
+                            <input type="number" name="edad" class="form-control mb-3" placeholder="Edad" required>
+                            <input type="email" name="correo" class="form-control mb-3" placeholder="Correo" required>
+                            <input type="password" name="password" class="form-control mb-3" placeholder="Contraseña" required>
+                            <button class="btn btn-success w-100 p-3">CREAR MI CUENTA SEGURA</button>
+                        </form>
+                    </div>
+
+                    <!-- RECUPERACIÓN -->
+                    <div class="tab-pane fade" id="rec">
+                        <div class="text-center mb-4">
+                            <h4 class="fw-bold">Centro de Recuperación</h4>
+                            <p class="text-muted small">¿Qué deseas recuperar?</p>
+                        </div>
+
+                        <!-- Opción A: Recuperar Correo -->
+                        <div class="border rounded-3 p-3 mb-3 bg-light">
+                            <h6 class="fw-bold text-primary">🔍 Olvidé mi Correo</h6>
+                            <form action="/recuperar_correo" method="POST">
+                                <input type="text" name="nombre" class="form-control mb-2 form-control-sm" placeholder="Nombre completo" required>
+                                <input type="number" name="edad" class="form-control mb-2 form-control-sm" placeholder="Tu edad" required>
+                                <input type="password" name="password" class="form-control mb-2 form-control-sm" placeholder="Tu contraseña" required>
+                                <button class="btn btn-primary btn-sm w-100 fw-bold">MOSTRAR MI CORREO</button>
+                            </form>
+                        </div>
+
+                        <!-- Opción B: Recuperar Contraseña -->
+                        <div class="border rounded-3 p-3 bg-light border-warning">
+                            <h6 class="fw-bold text-warning">🔑 Olvidé mi Contraseña</h6>
+                            <form action="/recuperar_password" method="POST">
+                                <input type="text" name="nombre" class="form-control mb-2 form-control-sm" placeholder="Nombre completo" required>
+                                <input type="number" name="edad" class="form-control mb-2 form-control-sm" placeholder="Tu edad" required>
+                                <input type="email" name="correo" class="form-control mb-2 form-control-sm" placeholder="Tu correo electrónico" required>
+                                <button class="btn btn-warning btn-sm w-100 fw-bold">CAMBIAR MI CONTRASEÑA</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

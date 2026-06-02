@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+   {% extends 'layout.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- IZQUIERDA: PERFIL Y MEDALLAS -->
+        <div class="col-md-4">
+            <div class="card p-4 border-0 shadow mb-4 rounded-4">
+                <div class="bg-success text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center shadow" style="width: 70px; height: 70px; font-size: 2rem;">
+                    {{ user.nombre[0]|upper }}
+                </div>
+                <h4 class="fw-bold text-center">{{ user.nombre }}</h4>
+                <hr>
+                <form action="/editar_perfil" method="POST">
+                    <div class="mb-2">
+                        <label class="small fw-bold">Nombre</label>
+                        <input type="text" name="nombre" class="form-control form-control-sm rounded-pill" value="{{ user.nombre }}" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="small fw-bold">Edad</label>
+                        <!-- AQUÍ: CAMBIADO A TYPE NUMBER PARA PODER EDITAR -->
+                        <input type="number" name="edad" class="form-control form-control-sm rounded-pill" value="{{ user.edad }}" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="small fw-bold">Correo</label>
+                        <input type="email" name="correo" class="form-control form-control-sm rounded-pill" value="{{ user.correo }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="small fw-bold">Nueva Contraseña</label>
+                        <input type="password" name="password" class="form-control form-control-sm rounded-pill" placeholder="Opcional">
+                    </div>
+                    <button class="btn btn-success w-100 rounded-pill fw-bold shadow-sm">ACTUALIZAR DATOS</button>
+                </form>
+            </div>
+
+            <!-- SECCIÓN: MIS MEDALLAS -->
+            <div class="card p-4 border-0 shadow mb-4 rounded-4">
+                <h5 class="fw-bold mb-3 text-center">🏆 Mis Logros</h5>
+                <div class="d-flex justify-content-center gap-2">
+                    <!-- Medalla Novato -->
+                    <div class="text-center">
+                        <div class="p-3 bg-light rounded-circle border border-warning shadow-sm" style="font-size: 1.5rem;">🌱</div>
+                        <small class="fw-bold">Novato</small>
+                    </div>
+                    <!-- Medalla Constancia -->
+                    {% if boletas|length >= 3 %}
+                    <div class="text-center">
+                        <div class="p-3 bg-light rounded-circle border border-success shadow-sm" style="font-size: 1.5rem;">🔥</div>
+                        <small class="fw-bold">Imparable</small>
+                    </div>
+                    {% endif %}
+                    <!-- Medalla Maestro (Si tiene algún 10) -->
+                    {% set ns = namespace(perfecto=false) %}
+                    {% for b in boletas %}{% if b.puntuacion >= 10 %}{% set ns.perfecto = true %}{% endif %}{% endfor %}
+                    {% if ns.perfecto %}
+                    <div class="text-center">
+                        <div class="p-3 bg-light rounded-circle border border-primary shadow-sm" style="font-size: 1.5rem;">💎</div>
+                        <small class="fw-bold">Maestro</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- SECCIÓN: FAVORITOS -->
+            <div class="card p-4 border-0 shadow rounded-4 text-start">
+                <h5 class="fw-bold mb-3">⭐ Mis Cursos Favoritos</h5>
+                {% if favoritos %}
+                    <div class="list-group list-group-flush">
+                    {% for f in favoritos %}
+                        <a href="/curso/{{ f.curso_nombre }}" class="list-group-item list-group-item-action border-0 px-0 small">
+                            📖 {{ f.curso_nombre }}
+                        </a>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted small">Cero favoritos por ahora.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- DERECHA: CERTIFICACIONES -->
+        <div class="col-md-8">
+            <div class="card p-4 border-0 shadow rounded-4">
+                <h3 class="fw-bold mb-4 text-start">📜 Mis Certificaciones</h3>
+                {% if boletas %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle shadow-sm">
+                        <thead class="table-light">
+                            <tr class="small text-muted">
+                                <th>CURSO</th>
+                                <th>NOTA</th>
+                                <th>ACCIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for b in boletas %}
+                            <tr>
+                                <td class="fw-bold text-start">{{ b.curso_nombre }}</td>
+                                <td><span class="badge bg-success rounded-pill px-3">{{ b.puntuacion|int }}/10</span></td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="/descargar_diploma/{{ b.id }}" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold shadow-sm">PDF</a>
+                                        <button onclick="imprimirBoleta('{{ b.curso_nombre }}', '{{ b.puntuacion|int }}')" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">🖨️ Impresión</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted">No has terminado cursos aún. ¡Empieza hoy!</p>
+                    <a href="/dashboard" class="btn btn-primary rounded-pill px-4">Ver Cursos</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function imprimirBoleta(curso, puntos) {
+    const nombre = "{{ user.nombre }}";
+    const fecha = new Date().toLocaleDateString();
+    const v = window.open('', '_blank');
+    v.document.write(`
+        <html>
+        <head>
+            <title>Certificado - Semanas de Paz</title>
+            <style>
+                @page { size: landscape; margin: 0; }
+                body { 
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                    margin: 0; 
+                    padding: 40px; 
+                    background-color: #f0f0f0; 
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .cert-border { 
+                    border: 15px solid #1b4332; 
+                    padding: 20px; 
+                    background-color: white; 
+                    width: 900px;
+                    height: 600px;
+                    position: relative;
+                    box-shadow: 0 0 50px rgba(0,0,0,0.3);
+                    text-align: center;
+                }
+                .inner-border { 
+                    border: 2px solid #b8860b; 
+                    height: calc(100% - 40px); 
+                    padding: 20px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                }
+                .header-title { 
+                    font-size: 18px; 
+                    color: #666; 
+                    letter-spacing: 8px; 
+                    margin-bottom: 10px;
+                    font-weight: bold;
+                }
+                h1 { 
+                    color: #1b4332; 
+                    font-size: 60px; 
+                    margin: 0;
+                    font-weight: 800;
+                }
+                .honor-text { font-size: 22px; color: #444; margin: 30px 0 10px 0; }
+                .user-name { 
+                    font-size: 55px; 
+                    color: #b8860b; 
+                    margin: 10px 0; 
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    border-bottom: 3px solid #f2f2f2;
+                    display: inline-block;
+                    padding: 0 60px;
+                }
+                .concluyo-text { font-size: 20px; color: #444; margin: 20px 0 5px 0; }
+                .course-name { 
+                    font-size: 35px; 
+                    color: #1b4332; 
+                    font-weight: bold;
+                    text-transform: uppercase;
+                }
+                .score-container { 
+                    background-color: #1b4332; 
+                    color: white; 
+                    padding: 15px 40px; 
+                    border-radius: 8px;
+                    margin: 30px auto 0 auto;
+                    display: inline-block;
+                }
+                .score-label { font-size: 12px; letter-spacing: 3px; display: block; opacity: 0.8; }
+                .score-value { font-size: 32px; font-weight: bold; }
+                .footer-date { 
+                    margin-top: 40px; 
+                    font-size: 14px; 
+                    color: #999; 
+                    font-style: italic;
+                }
+            </style>
+        </head>
+        <body onload="window.print()">
+            <div class="cert-border">
+                <div class="inner-border">
+                    <div class="header-title">CERTIFICADO OFICIAL</div>
+                    <h1>SEMANAS DE PAZ</h1>
+                    <p class="honor-text">Se otorga con honor a:</p>
+                    <div class="user-name">${nombre}</div>
+                    <p class="concluyo-text">Por haber completado con excelencia el curso de:</p>
+                    <div class="course-name">${curso}</div>
+                    <div class="score-container">
+                        <span class="score-label">CALIFICACIÓN FINAL</span>
+                        <span class="score-value">${puntos} / 10</span>
+                    </div>
+                    <p class="footer-date">Fecha de emisión: ${fecha}</p>
+                </div>
+            </div>
+        </body>
+        </html>
+    `);
+    v.document.close();
+}
+</script>
+{% endblock %}
+</body>
+</html>

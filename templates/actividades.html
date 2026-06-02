@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% extends 'base.html' %}
+{% block content %}
+<div class="container py-5 text-center">
+    <h2 class="fw-bold"><i class="bi bi-controller"></i> Centro de Juegos</h2>
+    <p class="fs-4">Aquí encontrarás más sopas de letras y memoramas para cada actividad.</p>
+    <div class="row mt-5">
+        <div class="col-md-6"><div class="card p-5 bg-warning shadow"><h3>Sopa de Letras</h3><button class="btn btn-dark mt-3">Jugar Ahora</button></div></div>
+        <div class="col-md-6"><div class="card p-5 bg-info shadow"><h3>Memorama Pro</h3><button class="btn btn-dark mt-3">Jugar Ahora</button></div></div>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

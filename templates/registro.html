@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-5 card p-5 shadow">
+        <h2 class="text-center fw-bold mb-4">Registro de Nuevo Alumno</h2>
+        <form action="/registro" method="POST">
+            <input type="text" name="nombre" class="form-control mb-3" placeholder="Nombre completo" required>
+            <input type="number" name="edad" class="form-control mb-3" placeholder="Tu Edad" required>
+            <input type="email" name="correo" class="form-control mb-3" placeholder="Correo Electrónico" required>
+            <input type="password" name="password" class="form-control mb-3" placeholder="Crea una contraseña" required>
+            <button class="btn btn-primary w-100 fw-bold">CREAR CUENTA</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>
