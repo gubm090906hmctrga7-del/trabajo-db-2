@@ -1,14 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    {% extends 'layout.html' %}
+<!-- Esta plantilla extiende layout.html, que ya trae la barra de navegación, -->
+<!-- Bootstrap, Bootstrap Icons y los estilos responsivos generales -->
+{% extends 'layout.html' %}
 {% block content %}
-<div class="container py-5">
+
+<!-- Estilos propios de esta página: tarjetas de curso "creativas" con icono y degradado -->
+<style>
+    /* Tarjeta de curso: usa el degradado definido con variables CSS por curso */
+    .curso-card {
+        position: relative;
+        height: 220px;
+        border-radius: 22px;
+        overflow: hidden;
+        color: #fff;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, var(--c1), var(--c2));
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    /* Al pasar el mouse, la tarjeta "flota" un poco (efecto solo visible en escritorio) */
+    .curso-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 18px 35px rgba(0,0,0,0.25);
+        color: #fff;
+    }
+    /* Icono grande de fondo, semitransparente, decorativo */
+    .curso-card .icono-fondo {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 5.5rem;
+        opacity: 0.18;
+    }
+    /* Icono pequeño dentro de la "burbuja" junto al título */
+    .curso-card .icono-burbuja {
+        width: 48px; height: 48px;
+        background: rgba(255,255,255,0.25);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem;
+        margin-bottom: 0.75rem;
+        backdrop-filter: blur(4px);
+    }
+    /* Título del curso dentro de la tarjeta */
+    .curso-card h5 { font-weight: 800; margin-bottom: 0.25rem; }
+    /* Texto de llamado a la acción */
+    .curso-card .cta { font-size: 0.85rem; opacity: 0.9; }
+
+    /* En celulares, bajamos un poco la altura de la tarjeta para que quepan más por pantalla */
+    @media (max-width: 575.98px) {
+        .curso-card { height: 170px; padding: 1.1rem; }
+        .curso-card .icono-fondo { font-size: 4rem; }
+    }
+</style>
+
+<div class="container py-4 py-md-5">
+    <!-- Migas de pan: permiten regresar al panel principal -->
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/dashboard">Inicio</a></li>
@@ -16,22 +66,26 @@
       </ol>
     </nav>
 
+    <!-- Título de la sección -->
     <h2 class="fw-bold text-uppercase mb-4 text-success border-bottom pb-2">Cursos de {{ tipo }}</h2>
-    
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for curso in cursos %}
+
+    <!-- Rejilla responsiva: 1 columna en celular, 2 en tablet, 3 en laptop/escritorio -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+        <!-- 'curso' es una tupla: (nombre, icono_bootstrap, color1, color2) armada en app.py -->
+        {% for curso, icono, c1, c2 in cursos %}
         <div class="col">
-            <div class="card h-100 border-0 shadow-sm hover-shadow">
-                <div class="card-body p-4">
-                    <h5 class="card-title fw-bold">{{ curso }}</h5>
-                    <p class="text-muted">Inicia este curso para aprender nuevas técnicas y fortalecer tu desarrollo personal.</p>
-                    <a href="/curso/{{ curso }}" class="btn btn-outline-success w-100 rounded-pill">Iniciar Curso</a>
-                </div>
-            </div>
+            <a href="/curso/{{ curso }}" class="curso-card" style="--c1: {{ c1 }}; --c2: {{ c2 }};">
+                <!-- Icono decorativo grande de fondo -->
+                <i class="bi {{ icono }} icono-fondo"></i>
+                <!-- Burbuja con icono pequeño -->
+                <div class="icono-burbuja"><i class="bi {{ icono }}"></i></div>
+                <!-- Nombre del curso -->
+                <h5>{{ curso }}</h5>
+                <!-- Texto que invita a iniciar el curso -->
+                <span class="cta">Toca para comenzar <i class="bi bi-arrow-right-short"></i></span>
+            </a>
         </div>
         {% endfor %}
     </div>
 </div>
 {% endblock %}
-</body>
-</html>

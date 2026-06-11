@@ -1,41 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Codificación de caracteres para que acentos y emojis se vean bien -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Meta viewport: hace que la página se adapte al ancho real del dispositivo (celular, tablet o laptop) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Semanas de Paz | Rehabilitación</title>
+    <!-- Bootstrap: framework de estilos responsivo (rejilla, botones, tarjetas, etc.) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons: librería de iconos usada en las tarjetas de cursos y logros -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
+        /* Variables de color reutilizables en toda la plantilla */
         :root { --main-color: #2D6A4F; --accent: #D4A373; --bg: #F8F9FA; }
+
+        /* Fondo y tipografía base de toda la aplicación */
         body { background-color: var(--bg); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        /* Barra de navegación superior */
         .navbar { background-color: var(--main-color) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+        /* Botón principal con el color institucional */
         .btn-primary { background-color: var(--main-color); border: none; }
         .btn-primary:hover { background-color: #1B4332; }
+
+        /* Tarjetas redondeadas y sin borde duro, usadas en casi toda la app */
         .card { border-radius: 15px; border: none; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+
+        /* Banner principal de la página de inicio, con imagen de fondo */
         .banner { background: linear-gradient(rgba(45,106,79,0.8), rgba(45,106,79,0.8)), url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4'); background-size: cover; color: white; padding: 100px 0; border-radius: 0 0 50px 50px; }
+
+        /* ============================================ */
+        /* === AJUSTES RESPONSIVOS PARA TODA LA APP === */
+        /* ============================================ */
+
+        /* Tablets (pantallas medianas, hasta 991px de ancho) */
+        @media (max-width: 991.98px) {
+            .banner { padding: 60px 0; border-radius: 0 0 30px 30px; }
+            .banner h1 { font-size: 2.2rem; }
+            .banner p { font-size: 1.1rem; }
+        }
+
+        /* Celulares (pantallas pequeñas, hasta 575px de ancho) */
+        @media (max-width: 575.98px) {
+            .banner { padding: 40px 0; border-radius: 0 0 20px 20px; }
+            .banner h1 { font-size: 1.6rem; }
+            .banner p { font-size: 0.95rem; }
+            .card { border-radius: 12px; }
+            /* Reducimos un poco el padding general en celulares para aprovechar el espacio */
+            .container, .container-fluid { padding-left: 12px; padding-right: 12px; }
+        }
     </style>
+</head>
+<body>
+    <!-- Mostramos la barra de navegación solo si el usuario inició sesión -->
     {% if session['user_id'] %}
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
+            <!-- Marca / link al panel principal -->
             <a class="navbar-brand fw-bold" href="/dashboard">NUEVA VIDA</a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="/dashboard">Cursos</a>
-                <a class="nav-link" href="/perfil">Mi Perfil</a>
-                <a class="btn btn-outline-light btn-sm ms-3" href="/logout">Cerrar Sesión</a>
+            <!-- Botón "hamburguesa": aparece solo en pantallas pequeñas (celular/tablet) -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Abrir menú">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Contenedor de los enlaces: se colapsa (oculta) en pantallas pequeñas -->
+            <div class="collapse navbar-collapse" id="navbarMenu">
+                <div class="navbar-nav ms-auto text-center text-lg-start">
+                    <a class="nav-link" href="/dashboard">Cursos</a>
+                    <a class="nav-link" href="/perfil">Mi Perfil</a>
+                    <a class="btn btn-outline-light btn-sm ms-lg-3 mt-2 mt-lg-0" href="/logout">Cerrar Sesión</a>
+                </div>
             </div>
         </div>
     </nav>
     {% endif %}
 
     <div class="container mt-3">
+        <!-- Mensajes flash (avisos de éxito, error, info, etc.) -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}{% for cat, msg in messages %}
                 <div class="alert alert-{{cat}} alert-dismissible fade show shadow-sm border-0">{{msg}}</div>
@@ -43,8 +84,10 @@
         {% endwith %}
     </div>
 
+    <!-- Aquí cada plantilla hija inserta su propio contenido -->
     {% block content %}{% endblock %}
 
+    <!-- JavaScript de Bootstrap: necesario para que el menú colapsable y las pestañas funcionen -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

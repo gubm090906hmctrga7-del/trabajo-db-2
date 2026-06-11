@@ -1,18 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-   {% extends 'layout.html' %}
+<!-- Página de perfil: datos del usuario, progreso, certificaciones, logros y favoritos -->
+{% extends 'layout.html' %}
 
 {% block content %}
+<!-- Estilos propios de la sección de logros -->
+<style>
+    /* Tarjeta de cada logro: cuadrada, con icono grande arriba y texto abajo */
+    .logro-card {
+        border-radius: 16px;
+        padding: 0.9rem 0.5rem;
+        text-align: center;
+        height: 100%;
+        transition: transform 0.2s ease;
+    }
+    .logro-card:hover { transform: translateY(-4px); }
+    /* Logro desbloqueado: colores vivos */
+    .logro-card.desbloqueado {
+        background: linear-gradient(160deg, #eafff3, #ffffff);
+        border: 2px solid #52b788;
+        box-shadow: 0 6px 14px rgba(45,106,79,0.15);
+    }
+    /* Logro bloqueado: gris y semitransparente */
+    .logro-card.bloqueado {
+        background: #f1f1f1;
+        border: 2px dashed #cfcfcf;
+        opacity: 0.6;
+        filter: grayscale(1);
+    }
+    .logro-card .logro-icono { font-size: 2.2rem; line-height: 1; margin-bottom: 0.4rem; }
+    .logro-card .logro-nombre { font-size: 0.78rem; font-weight: 700; display: block; }
+    /* El logro 20 (final/leyenda) se destaca con un degradado dorado */
+    .logro-card.final.desbloqueado {
+        background: linear-gradient(160deg, #fff7e0, #ffe9a8);
+        border: 2px solid #d4af37;
+    }
+
+    /* En celulares mostramos más columnas pequeñas para que quepan los 20 logros */
+    @media (max-width: 575.98px) {
+        .logro-card .logro-icono { font-size: 1.7rem; }
+        .logro-card .logro-nombre { font-size: 0.68rem; }
+    }
+</style>
+
 <div class="container py-5">
     <div class="row">
-        <!-- IZQUIERDA: PERFIL Y MEDALLAS -->
-        <div class="col-md-4">
+        <!-- IZQUIERDA: PERFIL Y PROGRESO -->
+        <div class="col-12 col-md-4">
             <div class="card p-4 border-0 shadow mb-4 rounded-4">
                 <div class="bg-success text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center shadow" style="width: 70px; height: 70px; font-size: 2rem;">
                     {{ user.nombre[0]|upper }}
@@ -41,33 +73,7 @@
                 </form>
             </div>
 
-            <!-- SECCIÓN: MIS MEDALLAS -->
-            <div class="card p-4 border-0 shadow mb-4 rounded-4">
-                <h5 class="fw-bold mb-3 text-center">🏆 Mis Logros</h5>
-                <div class="d-flex justify-content-center gap-2">
-                    <!-- Medalla Novato -->
-                    <div class="text-center">
-                        <div class="p-3 bg-light rounded-circle border border-warning shadow-sm" style="font-size: 1.5rem;">🌱</div>
-                        <small class="fw-bold">Novato</small>
-                    </div>
-                    <!-- Medalla Constancia -->
-                    {% if boletas|length >= 3 %}
-                    <div class="text-center">
-                        <div class="p-3 bg-light rounded-circle border border-success shadow-sm" style="font-size: 1.5rem;">🔥</div>
-                        <small class="fw-bold">Imparable</small>
-                    </div>
-                    {% endif %}
-                    <!-- Medalla Maestro (Si tiene algún 10) -->
-                    {% set ns = namespace(perfecto=false) %}
-                    {% for b in boletas %}{% if b.puntuacion >= 10 %}{% set ns.perfecto = true %}{% endif %}{% endfor %}
-                    {% if ns.perfecto %}
-                    <div class="text-center">
-                        <div class="p-3 bg-light rounded-circle border border-primary shadow-sm" style="font-size: 1.5rem;">💎</div>
-                        <small class="fw-bold">Maestro</small>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
+            
 
             <!-- SECCIÓN: FAVORITOS -->
             <div class="card p-4 border-0 shadow rounded-4 text-start">
@@ -87,7 +93,7 @@
         </div>
 
         <!-- DERECHA: CERTIFICACIONES -->
-        <div class="col-md-8">
+        <div class="col-12 col-md-8">
             <div class="card p-4 border-0 shadow rounded-4">
                 <h3 class="fw-bold mb-4 text-start">📜 Mis Certificaciones</h3>
                 {% if boletas %}
@@ -125,9 +131,42 @@
             </div>
         </div>
     </div>
+
+    <!-- SECCIÓN: MIS 20 LOGROS -->
+    <div class="card p-4 border-0 shadow rounded-4 mt-4">
+        <h3 class="fw-bold mb-1 text-start">🏆 Mis Logros</h3>
+        <p class="text-muted small mb-4">
+            Desbloquea un logro por cada curso nuevo que completes. ¡El logro 20 te dará un certificado especial!
+        </p>
+
+        <!-- Rejilla responsiva: más columnas pequeñas en celular, menos y más grandes en escritorio -->
+        <div class="row row-cols-3 row-cols-sm-4 row-cols-md-5 g-3">
+            {% for logro in logros %}
+            <div class="col">
+                <div class="logro-card {{ 'desbloqueado' if logro.desbloqueado else 'bloqueado' }} {{ 'final' if logro.final }}"
+                     title="{{ logro.desc }}">
+                    <div class="logro-icono">{{ logro.icono if logro.desbloqueado else '🔒' }}</div>
+                    <span class="logro-nombre">{{ logro.nombre }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- CERTIFICADO FINAL: solo aparece cuando se completaron TODOS los cursos -->
+        {% if certificado_final %}
+        <div class="text-center mt-4 p-4 rounded-4" style="background: linear-gradient(135deg, #fff7e0, #ffe9a8); border: 2px solid #d4af37;">
+            <h4 class="fw-bold mb-2">👑 ¡Felicidades! Desbloqueaste todos los logros</h4>
+            <p class="mb-3">Has completado los {{ total_cursos }} cursos y obtenido los 20 logros. Descarga tu certificado de honor.</p>
+            <a href="/descargar_certificado_maestro" class="btn btn-lg rounded-pill px-5 fw-bold shadow" style="background: #d4af37; color: #1b4332;">
+                🎓 DESCARGAR CERTIFICADO FINAL
+            </a>
+        </div>
+        {% endif %}
+    </div>
 </div>
 
 <script>
+// Abre una ventana nueva con un certificado listo para imprimir (boleta de un curso)
 function imprimirBoleta(curso, puntos) {
     const nombre = "{{ user.nombre }}";
     const fecha = new Date().toLocaleDateString();
@@ -237,5 +276,3 @@ function imprimirBoleta(curso, puntos) {
 }
 </script>
 {% endblock %}
-</body>
-</html>

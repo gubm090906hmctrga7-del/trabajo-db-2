@@ -1,20 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    {% extends 'layout.html' %}
+<!-- Panel principal: muestra las 4 categorías de cursos disponibles -->
+{% extends 'layout.html' %}
 {% block content %}
-<div class="container py-5">
-    <div class="text-center mb-5">
+<!-- Contenedor general con espaciado vertical -->
+<div class="container py-4 py-md-5">
+    <!-- Encabezado de bienvenida -->
+    <div class="text-center mb-4 mb-md-5">
         <h1 class="fw-bold text-success">Panel de Control</h1>
         <p class="lead">Continúa tu camino hacia el éxito.</p>
     </div>
 
+    <!-- Rejilla de categorías -->
     <div class="row g-4">
+        <!-- Definimos cada categoría: (slug de la URL, icono, título, color de Bootstrap, color de fondo) -->
         {% set categorias = [
             ('arte', '🎨', 'ARTE', 'success', '#e9f5ee'),
             ('oficios', '🛠️', 'OFICIOS', 'warning', '#fff8f0'),
@@ -22,10 +19,12 @@
             ('informatica', '💻', 'INFORMÁTICA', 'danger', '#fdf0f0')
         ] %}
 
+        <!-- Recorremos cada categoría para crear su tarjeta -->
+        <!-- Rejilla responsiva: 1 columna en celular, 2 en tablet, 4 en laptop/escritorio -->
         {% for id, ico, tit, btn, bg in categorias %}
-        <div class="col-md-6 col-lg-3">
+        <div class="col-12 col-sm-6 col-lg-3">
             <div class="card h-100 text-center p-4 border-0 shadow position-relative" style="background: beige;">
-                <!-- Etiqueta Inteligente -->
+                <!-- Etiqueta Inteligente: indica si la categoría ya fue completada o es favorita -->
                 <div class="position-absolute top-0 end-0 m-2">
                     {% if tit in completados %}
                         <span class="badge bg-success rounded-pill">✅ Hecho</span>
@@ -34,8 +33,11 @@
                     {% endif %}
                 </div>
 
+                <!-- Icono grande de la categoría -->
                 <h2 class="display-4">{{ico}}</h2>
+                <!-- Nombre de la categoría -->
                 <h3 class="fw-bold text-{{btn}}">{{tit}}</h3>
+                <!-- Botón que lleva a la lista de cursos de esa categoría -->
                 <a href="/categoria/{{id}}" class="btn btn-{{btn}} rounded-pill mt-auto">Entrar</a>
             </div>
         </div>
@@ -43,5 +45,3 @@
     </div>
 </div>
 {% endblock %}
-</body>
-</html>

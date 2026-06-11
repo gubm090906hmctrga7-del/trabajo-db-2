@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    {% extends 'layout.html' %}
+<!-- Página de un curso individual: teoría por estaciones, videos, notas y examen final -->
+{% extends 'layout.html' %}
 
 {% block content %}
 <!-- Fuentes y Animaciones -->
@@ -48,12 +41,27 @@
     }
     
     .note-area { border: none; background: #f8f9fa; border-radius: 20px; padding: 20px; resize: none; width: 100%; }
+
+    /* === AJUSTES RESPONSIVOS === */
+    /* Tablets: reducimos un poco el título y el padding de las estaciones */
+    @media (max-width: 991.98px) {
+        .step-card { padding: 35px; margin: 25px auto; border-radius: 25px; }
+    }
+    /* Celulares: el título y los botones de la barra superior se ajustan al ancho disponible */
+    @media (max-width: 575.98px) {
+        h1.display-3 { font-size: 2rem; }
+        .course-nav .container { flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .course-nav .flex-grow-1 { order: 3; flex-basis: 100%; margin: 0 !important; }
+        .step-card { padding: 22px; margin: 15px auto; border-radius: 18px; }
+        .btn-glow { padding: 14px 30px; font-size: 1rem; }
+    }
 </style>
 
 <!-- NAV DEL CURSO -->
 <div class="course-nav">
     <div class="container d-flex justify-content-between align-items-center">
-        <a href="/dashboard" class="btn btn-dark rounded-pill px-4 fw-bold">↩ SALIR</a>
+        <!-- "javascript:history.back()" regresa a la página anterior (la categoría desde la que se entró) -->
+        <a href="javascript:history.back()" class="btn btn-dark rounded-pill px-4 fw-bold">↩ SALIR</a>
         <div class="flex-grow-1 mx-4 mx-md-5">
             <div class="custom-progress"><div id="course-bar" class="progress-fill"></div></div>
         </div>
@@ -67,7 +75,7 @@
 <div class="container py-5 text-center">
     <!-- Título y Favoritos -->
     <h1 class="display-3 fw-bold text-success mb-3" style="font-family: 'Poppins';">{{ nombre }}</h1>
-    
+
     <div class="mb-5">
         <a href="/toggle_favorito/{{ nombre }}" class="btn {{ 'btn-warning' if es_favorito else 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
             {{ '⭐ EN FAVORITOS' if es_favorito else '☆ AGREGAR A FAVORITOS' }}
@@ -145,21 +153,30 @@
 </div>
 
 <script>
+    // Identificador del usuario actual (se usa para guardar el progreso en su propio espacio)
     const userId = "{{ user_id }}";
-    const courseName = "{{ nombre }}"; 
+    // Nombre del curso actual
+    const courseName = "{{ nombre }}";
+    // Clave única en localStorage para guardar el avance de ESTE usuario en ESTE curso
     const storageKey = `paz_v3_u${userId}_c${courseName.replace(/\s+/g, '_')}`;
-    
+
     // Generar stations a partir del texto (split por doble salto de línea)
     const infoRaw = `{{ datos.info | safe }}`;
+    // Cada bloque separado por una línea en blanco se convierte en una "estación" de teoría
     const blocks = infoRaw.split('\n\n').filter(b => b.trim() !== "");
+    // Contenedor donde se insertarán las tarjetas de cada estación
     const box = document.getElementById('steps-wrapper');
 
+    // Construye y muestra las estaciones de teoría, restaurando el avance guardado
     function loadContent() {
+        // Leemos el progreso guardado (0 si nunca ha avanzado)
         const progress = parseInt(localStorage.getItem(storageKey)) || 0;
-        
+
         blocks.forEach((text, i) => {
+            // Creamos una tarjeta por cada bloque de información
             const card = document.createElement('div');
             card.id = 'step-' + i;
+            // La tarjeta se marca "active" (visible) si ya fue alcanzada según el progreso guardado
             card.className = `step-card mx-auto ${i <= progress ? 'active' : ''}`;
             card.innerHTML = `
                 <div class="text-muted small fw-bold mb-2">ESTACIÓN ${i+1} DE ${blocks.length}</div>
@@ -178,21 +195,27 @@
             }
         });
 
+        // Si ya completó todas las estaciones, mostramos directamente el examen final
         if (progress >= blocks.length) document.getElementById('exam-zone').style.display = 'block';
+        // Actualizamos la barra de progreso superior
         updateBar(progress);
     }
 
+    // Avanza a la siguiente estación (o al examen, si era la última)
     function nextProgress(idx) {
+        // Ocultamos el botón "siguiente" de la estación actual
         const currentBtn = document.getElementById('area-btn-' + idx);
         if(currentBtn) currentBtn.style.display = 'none';
-        
+
         const nextIdx = idx + 1;
         if (nextIdx < blocks.length) {
+            // Mostramos la siguiente estación y guardamos el nuevo progreso
             const nextCard = document.getElementById('step-' + nextIdx);
             nextCard.classList.add('active');
             localStorage.setItem(storageKey, nextIdx);
             setTimeout(() => nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' }), 200);
         } else {
+            // Ya no hay más estaciones: mostramos el examen final
             document.getElementById('exam-zone').style.display = 'block';
             localStorage.setItem(storageKey, nextIdx);
             setTimeout(() => document.getElementById('exam-zone').scrollIntoView({ behavior: 'smooth' }), 200);
@@ -200,17 +223,20 @@
         updateBar(nextIdx);
     }
 
+    // Actualiza el ancho (porcentaje) de la barra de progreso superior
     function updateBar(idx) {
         const p = (idx / blocks.length) * 100;
         document.getElementById('course-bar').style.width = p + '%';
     }
 
+    // Muestra u oculta el bloque de videos
     function toggleMedia() {
         const m = document.getElementById('media-center');
         m.style.display = (m.style.display === 'block') ? 'none' : 'block';
         if(m.style.display === 'block') m.scrollIntoView({ behavior: 'smooth' });
     }
 
+    // Borra el progreso guardado del curso (previa confirmación) y recarga la página
     function reiniciar() {
         if(confirm("¿Estás seguro de reiniciar tu progreso en este curso?")) {
             localStorage.removeItem(storageKey);
@@ -218,6 +244,7 @@
         }
     }
 
+    // Avisa el porcentaje de avance actual y regresa al panel de cursos
     function pausar() {
         const p = (parseInt(localStorage.getItem(storageKey)) || 0);
         const percent = Math.round((p / blocks.length) * 100);
@@ -225,9 +252,7 @@
         window.location.href = "/dashboard";
     }
 
+    // Al cargar la página, construimos las estaciones de teoría
     window.onload = loadContent;
 </script>
 {% endblock %}
-</body>
-</html>
-

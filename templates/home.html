@@ -1,25 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    {% extends 'layout.html' %}
+<!-- Página de inicio: banner de bienvenida + formularios de login, registro y recuperación -->
+{% extends 'layout.html' %}
 
 {% block content %}
+<!-- Banner principal con título e imagen de fondo (responsivo, ver layout.html) -->
 <div class="container-fluid banner text-center shadow-lg">
     <h1 class="display-3 fw-bold mb-3">Tu Camino a la Libertad</h1>
     <p class="fs-4 fst-italic">"Un espacio seguro diseñado para tu renacer."</p>
 </div>
 
-<div class="container my-5">
+<!-- Tarjeta central con las pestañas de acceso -->
+<div class="container my-4 my-md-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg p-5">
-                <!-- Pestañas de Navegación -->
-                <ul class="nav nav-pills mb-4 justify-content-center bg-light p-2 rounded-pill" id="pills-tab">
+        <!-- En celular ocupa todo el ancho, en tablet 8/12 y en escritorio 6/12 -->
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-lg p-3 p-md-5">
+                <!-- Pestañas de Navegación: permiten cambiar entre Entrar / Registro / Recuperar -->
+                <ul class="nav nav-pills mb-4 justify-content-center bg-light p-2 rounded-pill flex-wrap" id="pills-tab">
                     <li class="nav-item">
                         <button class="nav-link active rounded-pill" data-bs-toggle="pill" data-bs-target="#login">Entrar</button>
                     </li>
@@ -30,9 +26,9 @@
                         <button class="nav-link rounded-pill" data-bs-toggle="pill" data-bs-target="#rec">Recuperar</button>
                     </li>
                 </ul>
-                
+
                 <div class="tab-content">
-                    <!-- LOGIN -->
+                    <!-- LOGIN: formulario para iniciar sesión con correo y contraseña -->
                     <div class="tab-pane fade show active" id="login">
                         <form action="/login" method="POST">
                             <input type="email" name="correo" class="form-control mb-3 p-3" placeholder="Correo Electrónico" required>
@@ -41,7 +37,7 @@
                         </form>
                     </div>
 
-                    <!-- REGISTRO -->
+                    <!-- REGISTRO: formulario para crear una cuenta nueva -->
                     <div class="tab-pane fade" id="reg">
                         <form action="/registro" method="POST">
                             <input type="text" name="nombre" class="form-control mb-3" placeholder="Nombre completo" required>
@@ -52,14 +48,14 @@
                         </form>
                     </div>
 
-                    <!-- RECUPERACIÓN -->
+                    <!-- RECUPERACIÓN: dos opciones, recuperar correo o recuperar contraseña -->
                     <div class="tab-pane fade" id="rec">
                         <div class="text-center mb-4">
                             <h4 class="fw-bold">Centro de Recuperación</h4>
                             <p class="text-muted small">¿Qué deseas recuperar?</p>
                         </div>
 
-                        <!-- Opción A: Recuperar Correo -->
+                        <!-- Opción A: Recuperar Correo (valida nombre, edad y contraseña) -->
                         <div class="border rounded-3 p-3 mb-3 bg-light">
                             <h6 class="fw-bold text-primary">🔍 Olvidé mi Correo</h6>
                             <form action="/recuperar_correo" method="POST">
@@ -70,7 +66,7 @@
                             </form>
                         </div>
 
-                        <!-- Opción B: Recuperar Contraseña -->
+                        <!-- Opción B: Recuperar Contraseña (valida nombre, edad y correo) -->
                         <div class="border rounded-3 p-3 bg-light border-warning">
                             <h6 class="fw-bold text-warning">🔑 Olvidé mi Contraseña</h6>
                             <form action="/recuperar_password" method="POST">
@@ -87,5 +83,3 @@
     </div>
 </div>
 {% endblock %}
-</body>
-</html>
